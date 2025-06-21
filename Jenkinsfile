@@ -1,30 +1,24 @@
 pipeline {
     agent any
     environment {
-        RENDER_API_KEY = credentials('render-api-key') 
-        SERVICE_ID = 'srv-d1bd0hqdbo4c73cdeif0'
-        DOTNET_CLI_HOME = "/tmp/dotnet"
+        RENDER_API_KEY = credentials('render-api-key') // ID của Render API Key
+        SERVICE_ID = 'srv-d1bd0hqdbo4c73cdeif0' // Service ID của bạn
     }
     stages {
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'github-credentials', url: 'https://github.com/zyond26/Web_Restaurant_host.git', branch: 'master'
-            }
-        }
         stage('Restore') {
             steps {
-                sh 'dotnet restore src/Web_Restaurant.csproj'
+                bat 'dotnet restore src\\Web_Restaurant.csproj'
             }
         }
         stage('Build') {
             steps {
-                sh 'dotnet build src/Web_Restaurant.csproj -c Release --no-restore'
+                bat 'dotnet build src\\Web_Restaurant.csproj -c Release --no-restore'
             }
         }
         stage('Test') {
             steps {
                 echo 'Chạy unit tests (thêm lệnh test nếu có)'
-                // Nếu có project test, thêm: sh 'dotnet test tests/YourTestProject.csproj'
+                // Nếu có project test: bat 'dotnet test tests\\YourTestProject.csproj'
             }
         }
         stage('Deploy to Render') {
@@ -33,12 +27,12 @@ pipeline {
                     def payload = '''{
                         "clearCache": true
                     }'''
-                    sh """
-                        curl -X POST \
-                        -H "Authorization: Bearer ${RENDER_API_KEY}" \
-                        -H "Content-Type: application/json" \
-                        -d '${payload}' \
-                        https://api.render.com/v1/services/${SERVICE_ID}/deploys
+                    bat """
+                        curl -X POST ^
+                        -H "Authorization: Bearer %RENDER_API_KEY%" ^
+                        -H "Content-Type: application/json" ^
+                        -d "%payload%" ^
+                        https://api.render.com/v1/services/%SERVICE_ID%/deploys
                     """
                 }
             }
@@ -55,4 +49,4 @@ pipeline {
             echo 'Pipeline thất bại. Kiểm tra log để biết chi tiết.'
         }
     }
-} 
+}
