@@ -43,8 +43,7 @@ pipeline {
                 }
             }
         }
-    }
-       stage ('Publish') {
+        stage ('Publish') {
 		steps {
 			echo 'public 2 runnig folder'
 		//iisreset /stop // stop iis de ghi de file 
@@ -60,6 +59,7 @@ pipeline {
         }
         failure {
             echo 'Pipeline thất bại. Kiểm tra log để biết chi tiết.'
+          }
         }
     }
 }
