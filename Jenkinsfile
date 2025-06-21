@@ -1,33 +1,36 @@
 pipeline {
     agent any
+
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
+                git branch: 'main', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
             }
         }
-        
+
         stage('Build') {
             steps {
-                // Thay đổi: Publish project thay vì solution
-                bat 'dotnet publish ./Web_Restaurant.csproj --configuration Release --output ./publish'
+                bat 'dotnet restore'
+                bat 'dotnet build --configuration Release'
             }
         }
-        
+
+        stage('Publish') {
+            steps {
+                bat 'dotnet publish --configuration Release --output "C:\\publish\\WebRestaurant"'
+            }
+        }
+
         stage('Deploy to IIS') {
             steps {
-                // Sử dụng đường dẫn đầy đủ đến appcmd
-                bat '%windir%\\System32\\inetsrv\\appcmd stop apppool /apppool.name:"DefaultAppPool"'
+                bat '''
                 
-                // Xóa thư mục cũ
-                bat 'if exist "C:\\WebSites\\WebRestaurant" rmdir /s /q "C:\\WebSites\\WebRestaurant"'
-                
-                // Tạo thư mục mới và copy file
-                bat 'mkdir "C:\\WebSites\\WebRestaurant"'
-                bat 'xcopy ".\\publish\\*" "C:\\WebSites\\WebRestaurant" /E /Y /I'
-                
-                // Sử dụng đường dẫn đầy đủ đến iisreset
-                bat '%windir%\\System32\\iisreset /restart'
+                # Copy files publish sang thư mục IIS
+                robocopy "C:\\publish\\WebRestaurant" "C:\\inetpub\\wwwroot\\WebRestaurant" /MIR
+
+                # Start app pool
+                Start-WebAppPool -Name "WebRestaurantAppPool"
+                '''
             }
         }
     }

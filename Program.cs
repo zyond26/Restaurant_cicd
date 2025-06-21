@@ -114,4 +114,7 @@ using (var scope = app.Services.CreateScope())
     DataSeeder.SeedData(dbContext);
 }
 
+
+
+
 app.Run();
