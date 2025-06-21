@@ -7,12 +7,12 @@ pipeline {
     stages {
         stage('Restore') {
             steps {
-                bat 'dotnet restore src\\Web_Restaurant.csproj'
+                bat 'dotnet restore Web_Restaurant.csproj'
             }
         }
         stage('Build') {
             steps {
-                bat 'dotnet build src\\Web_Restaurant.csproj -c Release --no-restore'
+                bat 'dotnet build Web_Restaurant.csproj -c Release --no-restore'
             }
         }
         stage('Test') {
