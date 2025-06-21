@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
+                git branch: 'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
             }
         }
 
