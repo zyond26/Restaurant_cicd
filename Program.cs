@@ -114,7 +114,8 @@ using (var scope = app.Services.CreateScope())
     DataSeeder.SeedData(dbContext);
 }
 
-
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Listen($"http://0.0.0.0:{port}");
 
 
 app.Run();
