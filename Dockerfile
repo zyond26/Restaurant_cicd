@@ -1,6 +1,13 @@
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["Web_Restaurant.csproj", "."]
+RUN dotnet restore
 COPY . .
-CMD ["npm", "start"]
+RUN dotnet publish -c Release -o /app
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "Web_Restaurant.dll"]
