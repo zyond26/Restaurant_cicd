@@ -65,7 +65,7 @@ namespace WebRestaurant.Data
                     new MenuItem { Name = "Bánh mochi", Description = "Bánh mochi Nhật Bản mềm dẻo", Price = 30000, ImageUrl = "https://www.fujimarket.vn/images_upload/nhung-dieu-thu-vi-ve-banh-mochi-nhat-ban.jpg", Category = "Tráng miệng" },
 
                     // Khai vị bổ sung
-                    new MenuItem { Name = "Súp hải sản", Description = "Súp hải sản tươi ngon", Price = 35000, ImageUrl = "https://cdn.buffetposeidon.com/app/media/uploaded-files/120824-sup-hai-san-buffet-poseidon-1.jpg", Category = "Khai vị" },
+                    new MenuItem { Name = "Súp hải sản", Description = "Súp hải sản tươi ngon", Price = 35000, ImageUrl = "https://monngonmoingay.com/wp-content/uploads/2020/03/sup-nam-hai-san-chua-cay.webp", Category = "Khai vị" },
                     new MenuItem { Name = "Chả giò", Description = "Chả giò giòn rụm, nhân thịt", Price = 30000, ImageUrl = "https://www.disneycooking.com/wp-content/uploads/2019/08/c%C3%A1ch-l%C3%A0m-ch%E1%BA%A3-gi%C3%B2-t%C3%B4m-th%E1%BB%8Bt-khoai-m%C3%B4n.jpg", Category = "Khai vị" },
                     new MenuItem { Name = "Nộm bò khô", Description = "Nộm bò khô thơm ngon, đậm vị", Price = 32000, ImageUrl = "https://media.loveitopcdn.com/25228/nom-bo-kho.jpg", Category = "Khai vị" },
                     new MenuItem { Name = "Bánh bột lọc", Description = "Bánh bột lọc Huế truyền thống", Price = 28000, ImageUrl = "https://statics.vinpearl.com/banh-bot-loc-hue-anh-thumb_1628662396.png", Category = "Khai vị" },
