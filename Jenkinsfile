@@ -11,12 +11,6 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
             }
         }
-    stages {
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'github-credentials', url: 'https://github.com/zyond26/Web_Restaurant_host.git', branch: 'master'
-            }
-        }
         stage('Restore') {
             steps {
                 sh 'dotnet restore src/Web_Restaurant.csproj'
@@ -57,7 +51,6 @@ pipeline {
 			bat 'xcopy "%WORKSPACE%" /E /Y /I /R "c:\\OrderRestaurant"'
  		} 
         }
-    }
      post {
         always {
             echo 'Pipeline hoàn thành!'
