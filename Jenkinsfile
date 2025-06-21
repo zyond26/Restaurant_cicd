@@ -1,14 +1,14 @@
 pipeline {
     agent any
     environment {
-        RENDER_API_KEY = credentials('render-api-key') // ID của Render API Key
-        SERVICE_ID = 'srv-d1bd0hqdbo4c73cdeif0' // Thay bằng Service ID của bạn
+        RENDER_API_KEY = credentials('render-api-key') 
+        SERVICE_ID = 'srv-d1bd0hqdbo4c73cdeif0'
         DOTNET_CLI_HOME = "/tmp/dotnet"
     }
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
+                git credentialsId: 'github-credentials', url: 'https://github.com/zyond26/Web_Restaurant_host.git', branch: 'master'
             }
         }
         stage('Restore') {
@@ -43,14 +43,8 @@ pipeline {
                 }
             }
         }
-        stage ('Publish') {
-		steps {
-			echo 'public 2 runnig folder'
-		//iisreset /stop // stop iis de ghi de file 
-			bat 'xcopy "%WORKSPACE%" /E /Y /I /R "c:\\OrderRestaurant"'
- 		} 
-        }
-     post {
+    }
+    post {
         always {
             echo 'Pipeline hoàn thành!'
         }
@@ -59,7 +53,6 @@ pipeline {
         }
         failure {
             echo 'Pipeline thất bại. Kiểm tra log để biết chi tiết.'
-          }
         }
     }
-}
+} 
