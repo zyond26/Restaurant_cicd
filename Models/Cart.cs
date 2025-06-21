@@ -7,6 +7,7 @@ namespace WebRestaurant.Models
     [Table("cart")]
     public class Cart
     {
+        
         [Key]
         public int Id { get; set; }
 

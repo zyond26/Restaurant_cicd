@@ -13,7 +13,7 @@ RUN dotnet build "./Web_Restaurant.csproj" -c Release -o /app/build
 
 # Publish the app
 FROM build AS publish
-RUN dotnet publish "./Web_Restaurant.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Web_Restaurant.csproj" -c  Release -o /app/publish /p:UseAppHost=false
 
 # Final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
