@@ -34,3 +34,4 @@ docker rm restaurant-container"
 8. Đẩy Image lên Docker Hub
 
 "docker push yourusername/hostrestaurant:latest"
+
