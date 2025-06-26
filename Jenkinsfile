@@ -74,7 +74,7 @@ pipeline {
                     bat 'dotnet build  --configuration Release'
                 }
             }
-            stage ('public den t thu muc')
+        stage ('public den t thu muc')
             {
                 steps{
                     echo 'Publishing...'
