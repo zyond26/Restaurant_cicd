@@ -38,7 +38,7 @@ pipeline {
 		steps {
 			echo 'public 2 runnig folder'
 		//iisreset /stop // stop iis de ghi de file 
-			bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\myproject"'
+			bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\MySite"'
  		}
 	}
     stage('Deploy to IIS') {
@@ -48,7 +48,7 @@ pipeline {
                 # Tạo website nếu chưa có
                 Import-Module WebAdministration
                 if (-not (Test-Path IIS:\\Sites\\MySite)) {
-                    New-Website -Name "MySite" -Port 81 -PhysicalPath "c:\\wwwroot\\myproject"
+                    New-Website -Name "MySite" -Port 26 -PhysicalPath "c:\\wwwroot\\MySite"
                 }
                 '''
             }
