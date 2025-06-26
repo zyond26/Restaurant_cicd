@@ -1,180 +1,79 @@
-// pipeline {
-//     agent any
-//     environment {
-//         RENDER_API_KEY = credentials('render-api-key') // ID của Render API Key
-//         SERVICE_ID = 'srv-d1bd0hqdbo4c73cdeif0' // Service ID của bạn
-//     }
-//     stages {
-//         stage('Restore') {
-//             steps {
-//                 bat 'dotnet restore Web_Restaurant.csproj'
-//             }
-//         }
-//         stage('Build') {
-//             steps {
-//                 bat 'dotnet build Web_Restaurant.csproj -c Release --no-restore'
-//             }
-//         }
-//         stage('Test') {
-//             steps {
-//                 echo 'Chạy unit tests (thêm lệnh test nếu có)'
-//                 // Nếu có project test: bat 'dotnet test tests\\YourTestProject.csproj'
-//             }
-//         }
-//         stage('Deploy to Render') {
-//             steps {
-//                 script {
-//                     def payload = '''{
-//                         "clearCache": true
-//                     }'''
-//                     bat """
-//                         curl -X POST ^
-//                         -H "Authorization: Bearer %RENDER_API_KEY%" ^
-//                         -H "Content-Type: application/json" ^
-//                         -d "%payload%" ^
-//                         https://api.render.com/v1/services/%SERVICE_ID%/deploys
-//                     """
-//                 }
-//             }
-//         }
-//     }
-//     post {
-//         always {
-//             echo 'Pipeline hoàn thành!'
-//         }
-//         success {
-//             echo 'Triển khai thành công lên Render!'
-//         }
-//         failure {
-//             echo 'Pipeline thất bại. Kiểm tra log để biết chi tiết.'
-//         }
-//     }
-
-// pipeline {
-//     agent any
-    
-//     stages {
-//         stage('clone'){
-//             steps {
-//                 echo 'Cloning source code'
-//                 git branch:'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
-//             }
-//         } // end clone
-
-//         stage('restore package') {
-//                 steps
-//                 {
-//                     echo 'Restore package'
-//                     bat 'dotnet restore'
-//                 }
-//             }
-//         stage ('build') {
-//                 steps {
-//                     echo 'build project netcore'
-//                     bat 'dotnet build  --configuration Release'
-//                 }
-//             }
-//         stage ('public den t thu muc')
-//             {
-//                 steps{
-//                     echo 'Publishing...'
-//                     bat 'dotnet publish -c Release -o ./publish'
-//                 }
-//             }
-
-//         stage ('Publish') {
-//                 steps {
-//                     echo 'public 2 runnig folder'
-//                 //iisreset /stop // stop iis de ghi de file 
-//                     bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\WebRestaurant"'
-//                 }
-//             }
-//         stage('Deploy to IIS') {
-//                     steps {
-//                         powershell '''
-                    
-//                         # Tạo website nếu chưa có
-//                         Import-Module WebAdministration
-//                         if (-not (Test-Path IIS:\\Sites\\MySite)) {
-//                             New-Website -Name "MySite" -Port 26 -PhysicalPath "c:\\wwwroot\\WebRestaurant"
-//                         }
-//                         '''
-//                     }
-//                 } // end deploy iis
-//     }
-// }//end pipeline
-
-
 pipeline {
     agent any
-    
+
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+                bat 'if exist "c:\\wwwroot\\WebRestaurant" rmdir /s /q "c:\\wwwroot\\WebRestaurant"'
+            }
+        }
+
         stage('Setup .NET') {
             steps {
-                script {
-                    // Đảm bảo sử dụng đúng SDK version
-                    bat 'dotnet --version'
-                    // Hoặc cụ thể hơn:
-                    // bat 'dotnet use-sdk 9.0.200'
-                }
+                bat 'dotnet --version'
+                // Thêm cài đặt workload nếu cần
+                bat 'dotnet workload restore'
             }
         }
 
-        stage('clone') {
-            steps {
-                echo 'Cloning source code'
-                git branch: 'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
-            }
-        }
-
-        stage('restore package') {
-            steps {
-                echo 'Restore package'
-                bat 'dotnet restore'
-            }
-        }
-
-        stage('build') {
-            steps {
-                echo 'build project netcore'
-                bat 'dotnet build --configuration Release'
-            }
-        }
-
-        stage('publish') {
-            steps {
-                echo 'Publishing...'
-                bat 'dotnet publish -c Release -o ./publish --runtime win-x64 --self-contained false'
-            }
-        }
-
-        stage('Deploy to IIS') {
+        stage('Build') {
             steps {
                 bat '''
-                xcopy "%WORKSPACE%\\publish" "c:\\wwwroot\\WebRestaurant" /E /Y /I /R
+                dotnet clean
+                dotnet restore
+                dotnet build -c Release -p:UseAppHost=false
                 '''
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                bat '''
+                dotnet publish -c Release -o ./publish --runtime win-x64 --self-contained false /p:UseAppHost=false
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Dừng IIS tạm thời
+                    bat 'net stop was /y'
+                    
+                    // Xóa thư mục cũ nếu tồn tại
+                    bat 'if exist "c:\\wwwroot\\WebRestaurant" rmdir /s /q "c:\\wwwroot\\WebRestaurant"'
+                    
+                    // Copy file mới
+                    bat 'xcopy ".\\publish" "c:\\wwwroot\\WebRestaurant" /E /Y /I /Q'
+                    
+                    // Khởi động lại IIS
+                    bat 'net start w3svc'
+                }
 
                 powershell '''
-                # Cài đặt module nếu cần
-                if (-not (Get-Module -Name WebAdministration -ListAvailable)) {
-                    Install-WindowsFeature -Name Web-Scripting-Tools
-                }
-
-                Import-Module WebAdministration
-
-                # Tạo hoặc cập nhật website
-                if (-not (Test-Path "IIS:\\Sites\\MySite")) {
-                    New-Website -Name "MySite" -Port 26 -PhysicalPath "c:\\wwwroot\\WebRestaurant" -ApplicationPool "DefaultAppPool"
-                }
-                else {
-                    Set-ItemProperty "IIS:\\Sites\\MySite" -Name physicalPath -Value "c:\\wwwroot\\WebRestaurant"
-                }
-
-                # Đặt application pool sang phiên bản mới
-                Set-ItemProperty "IIS:\\AppPools\\DefaultAppPool" -Name managedRuntimeVersion -Value ""
-                Set-ItemProperty "IIS:\\AppPools\\DefaultAppPool" -Name processModel.identityType -Value 4
+                $siteName = "MySite"
+                $appPool = "MyAppPool"
                 
-                iisreset /restart
+                Import-Module WebAdministration
+                
+                # Tạo AppPool nếu chưa có
+                if (-not (Test-Path "IIS:\\AppPools\\$appPool")) {
+                    New-WebAppPool -Name $appPool
+                    Set-ItemProperty "IIS:\\AppPools\\$appPool" -Name managedRuntimeVersion -Value ""
+                    Set-ItemProperty "IIS:\\AppPools\\$appPool" -Name processModel.identityType -Value 4
+                }
+                
+                # Tạo/update website
+                if (-not (Test-Path "IIS:\\Sites\\$siteName")) {
+                    New-Website -Name $siteName -Port 26 -PhysicalPath "c:\\wwwroot\\WebRestaurant" -ApplicationPool $appPool
+                } else {
+                    Set-ItemProperty "IIS:\\Sites\\$siteName" -Name physicalPath -Value "c:\\wwwroot\\WebRestaurant"
+                    Set-ItemProperty "IIS:\\Sites\\$siteName" -Name applicationPool -Value $appPool
+                }
+                
+                # Cấp quyền
+                icacls "c:\\wwwroot\\WebRestaurant" /grant "IIS AppPool\\$appPool:(OI)(CI)(RX)"
                 '''
             }
         }
