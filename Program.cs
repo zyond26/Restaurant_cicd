@@ -55,14 +55,20 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 })
 .AddGoogle(googleOptions =>
 {
     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
-    googleOptions.ClientId = googleAuth["ClientId"];
-    googleOptions.ClientSecret = googleAuth["ClientSecret"];
+    var clientId = googleAuth["ClientId"];
+    var clientSecret = googleAuth["ClientSecret"];
+    if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+    {
+        throw new InvalidOperationException("Google authentication ClientId or ClientSecret is not configured in appsettings.json.");
+    }
+    googleOptions.ClientId = clientId;
+    googleOptions.ClientSecret = clientSecret;
     googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 });
 
