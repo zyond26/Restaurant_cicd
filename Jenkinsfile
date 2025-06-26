@@ -63,13 +63,13 @@ pipeline {
         stage('restore package') {
             steps {
                 echo 'Restore package'
-                bat 'dotnet restore'
+                bat 'dotnet restore Web_Restaurant.csproj'
             }
         }
         stage('build') {
             steps {
                 echo 'build project netcore'
-                bat 'dotnet build --configuration Release'
+                bat 'dotnet build Web_Restaurant.csproj --configuration Release'
             }
         }
         stage('public den t thu muc') {
@@ -85,21 +85,24 @@ pipeline {
                     %SystemRoot%\\System32\\inetsrv\\appcmd stop apppool /apppool.name:MySite
                     rmdir /S /Q "c:\\wwwroot\\Restaurant"
                     mkdir "c:\\wwwroot\\Restaurant"
+                    mkdir "c:\\wwwroot\\Restaurant\\logs"
                     icacls "c:\\wwwroot\\Restaurant" /grant "IIS AppPool\\MySite:F" /T
                     icacls "c:\\wwwroot\\Restaurant" /grant "IIS_IUSRS:F" /T
+                    icacls "c:\\wwwroot\\Restaurant\\logs" /grant "IIS AppPool\\MySite:F" /T
+                    icacls "c:\\wwwroot\\Restaurant\\logs" /grant "IIS_IUSRS:F" /T
                     xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\Restaurant"
                     %SystemRoot%\\System32\\inetsrv\\appcmd start apppool /apppool.name:MySite
                 '''
             }
         }
-        // hihi
         stage('Deploy to IIS') {
             steps {
                 powershell '''
                     Import-Module WebAdministration
                     if (-not (Test-Path IIS:\\Sites\\MySite)) {
                         New-WebAppPool -Name "MySite"
-                        New-Website -Name "MySite" -Port 82 -PhysicalPath "c:\\wwwroot\\Restaurant" -ApplicationPool "MySite"
+                        New-Website -Name "MySite" -Port 26 -PhysicalPath "c:\\wwwroot\\Restaurant" -ApplicationPool "MySite"
+                        Set-ItemProperty IIS:\\AppPools\\MySite -Name managedRuntimeVersion -Value ""
                     }
                     Restart-WebAppPool -Name "MySite"
                 '''
