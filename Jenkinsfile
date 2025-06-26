@@ -54,52 +54,55 @@ pipeline {
     agent any
     
     stages {
-        stage('clone'){
+        stage('clone') {
             steps {
                 echo 'Cloning source code'
-                git branch:'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
+                git branch: 'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
             }
         } // end clone
 
         stage('restore package') {
-                steps
-                {
-                    echo 'Restore package'
-                    bat 'dotnet restore'
-                }
+            steps {
+                echo 'Restore package'
+                bat 'dotnet restore'
             }
-        stage ('build') {
-                steps {
-                    echo 'build project netcore'
-                    bat 'dotnet build  --configuration Release'
-                }
+        }
+        stage('build') {
+            steps {
+                echo 'build project netcore'
+                bat 'dotnet build --configuration Release'
             }
-        stage ('public den t thu muc')
-            {
-                steps{
-                    echo 'Publishing...'
-                    bat 'dotnet publish -c Release -o ./publish'
-                }
+        }
+        stage('public den t thu muc') {
+            steps {
+                echo 'Publishing...'
+                bat 'dotnet publish -c Release -o ./publish'
             }
-
-        stage ('Publish') {
-                steps {
-                    echo 'public 2 runnig folder'
-                //iisreset /stop // stop iis de ghi de file 
-                    bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\Restaurant"'
-                }
+        }
+        stage('Publish') {
+            steps {
+                echo 'public 2 runnig folder'
+                bat '''
+                    %SystemRoot%\\System32\\inetsrv\\appcmd stop apppool /apppool.name:MySite
+                    rmdir /S /Q "c:\\wwwroot\\Restaurant"
+                    mkdir "c:\\wwwroot\\Restaurant"
+                    xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\Restaurant"
+                    %SystemRoot%\\System32\\inetsrv\\appcmd start apppool /apppool.name:MySite
+                '''
             }
+        }
         stage('Deploy to IIS') {
-                    steps {
-                        powershell '''
-                        # Tạo website nếu chưa có
-                        Import-Module WebAdministration
-                        if (-not (Test-Path IIS:\\Sites\\MySite)) {
-                            New-Website -Name "MySite" -Port 82 -PhysicalPath "c:\\wwwroot\\Restaurant"
-                        }
-                        '''
+            steps {
+                powershell '''
+                    # Tạo website nếu chưa có
+                    Import-Module WebAdministration
+                    if (-not (Test-Path IIS:\\Sites\\MySite)) {
+                        New-Website -Name "MySite" -Port 82 -PhysicalPath "c:\\wwwroot\\Restaurant"
                     }
-                } // end deploy iis
+                    # Khởi động lại website
+                    Restart-WebAppPool -Name "MySite"
+                '''
+            }
+        } // end deploy iis
     }
-}//end pipeline
-
+}
