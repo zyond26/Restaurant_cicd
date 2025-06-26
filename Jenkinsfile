@@ -1,81 +1,61 @@
 pipeline {
-    agent any
-
-    stages {
-        stage('Clean Workspace') {
+ agent any
+ 
+ stages {
+	stage('clone'){
+		steps {
+			echo 'Cloning source code'
+			git branch:'master', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
+		}
+	} // end clone
+    stage('restore package') {
+		steps
+		{
+			echo 'Restore package'
+			bat 'dotnet restore'
+		}
+	}
+    stage ('build') {
+		steps {
+			echo 'build project netcore'
+			bat 'dotnet build  --configuration Release'
+		}
+	}
+    stage ('tests') {
+		steps{
+			echo 'running test...'
+			bat 'dotnet test --no-build --verbosity normal'
+		}
+	}
+    stage ('public den t thu muc')
+	{
+		steps{
+			echo 'Publishing...'
+			bat 'dotnet publish -c Release -o ./publish'
+		}
+	}
+    stage ('Publish') {
+		steps {
+			echo 'public 2 runnig folder'
+		//iisreset /stop // stop iis de ghi de file 
+			bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\myproject"'
+ 		}
+	}
+    stage('Deploy to IIS') {
             steps {
-                cleanWs()
-                bat 'if exist "c:\\wwwroot\\WebRestaurant" rmdir /s /q "c:\\wwwroot\\WebRestaurant"'
-            }
-        }
-
-        stage('Setup .NET') {
-            steps {
-                bat 'dotnet --version'
-                // Thêm cài đặt workload nếu cần
-                bat 'dotnet workload restore'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                bat '''
-                dotnet clean
-                dotnet restore
-                dotnet build -c Release -p:UseAppHost=false
-                '''
-            }
-        }
-
-        stage('Publish') {
-            steps {
-                bat '''
-                dotnet publish -c Release -o ./publish --runtime win-x64 --self-contained false /p:UseAppHost=false
-                '''
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    // Dừng IIS tạm thời
-                    bat 'net stop was /y'
-                    
-                    // Xóa thư mục cũ nếu tồn tại
-                    bat 'if exist "c:\\wwwroot\\WebRestaurant" rmdir /s /q "c:\\wwwroot\\WebRestaurant"'
-                    
-                    // Copy file mới
-                    bat 'xcopy ".\\publish" "c:\\wwwroot\\WebRestaurant" /E /Y /I /Q'
-                    
-                    // Khởi động lại IIS
-                    bat 'net start w3svc'
-                }
-
                 powershell '''
-                $siteName = "MySite"
-                $appPool = "MyAppPool"
-                
+               
+                # Tạo website nếu chưa có
                 Import-Module WebAdministration
-                
-                # Tạo AppPool nếu chưa có
-                if (-not (Test-Path "IIS:\\AppPools\\$appPool")) {
-                    New-WebAppPool -Name $appPool
-                    Set-ItemProperty "IIS:\\AppPools\\$appPool" -Name managedRuntimeVersion -Value ""
-                    Set-ItemProperty "IIS:\\AppPools\\$appPool" -Name processModel.identityType -Value 4
+                if (-not (Test-Path IIS:\\Sites\\MySite)) {
+                    New-Website -Name "MySite" -Port 81 -PhysicalPath "c:\\wwwroot\\myproject"
                 }
-                
-                # Tạo/update website
-                if (-not (Test-Path "IIS:\\Sites\\$siteName")) {
-                    New-Website -Name $siteName -Port 26 -PhysicalPath "c:\\wwwroot\\WebRestaurant" -ApplicationPool $appPool
-                } else {
-                    Set-ItemProperty "IIS:\\Sites\\$siteName" -Name physicalPath -Value "c:\\wwwroot\\WebRestaurant"
-                    Set-ItemProperty "IIS:\\Sites\\$siteName" -Name applicationPool -Value $appPool
-                }
-                
-                # Cấp quyền
-                icacls "c:\\wwwroot\\WebRestaurant" /grant "IIS AppPool\\$appPool:(OI)(CI)(RX)"
                 '''
             }
-        }
-    }
-}
+        } // end deploy iis
+
+
+
+  } // end stages
+}//end pipeline
+
