@@ -51,57 +51,56 @@
 //     }
 
 pipeline {
- agent any
- 
- stages {
-	stage('clone'){
-		steps {
-			echo 'Cloning source code'
-			git branch:'main', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
-		}
-	} // end clone
-
-  } // end stages
-  stage('restore package') {
-		steps
-		{
-			echo 'Restore package'
-			bat 'dotnet restore'
-		}
-	}
-stage ('build') {
-		steps {
-			echo 'build project netcore'
-			bat 'dotnet build  --configuration Release'
-		}
-	}
-    stage ('public den t thu muc')
-	{
-		steps{
-			echo 'Publishing...'
-			bat 'dotnet publish -c Release -o ./publish'
-		}
-	}
-
-stage ('Publish') {
-		steps {
-			echo 'public 2 runnig folder'
-		//iisreset /stop // stop iis de ghi de file 
-			bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\Restaurant"'
- 		}
-	}
-stage('Deploy to IIS') {
+    agent any
+    
+    stages {
+        stage('clone'){
             steps {
-                powershell '''
-               
-                # Tạo website nếu chưa có
-                Import-Module WebAdministration
-                if (-not (Test-Path IIS:\\Sites\\MySite)) {
-                    New-Website -Name "MySite" -Port 82 -PhysicalPath "c:\\wwwroot\\Restaurant"
-                }
-                '''
+                echo 'Cloning source code'
+                git branch:'main', url: 'https://github.com/zyond26/Web_Restaurant_host.git'
             }
-        } // end deploy iis
+        } // end clone
 
+        stage('restore package') {
+                steps
+                {
+                    echo 'Restore package'
+                    bat 'dotnet restore'
+                }
+            }
+        stage ('build') {
+                steps {
+                    echo 'build project netcore'
+                    bat 'dotnet build  --configuration Release'
+                }
+            }
+            stage ('public den t thu muc')
+            {
+                steps{
+                    echo 'Publishing...'
+                    bat 'dotnet publish -c Release -o ./publish'
+                }
+            }
+
+        stage ('Publish') {
+                steps {
+                    echo 'public 2 runnig folder'
+                //iisreset /stop // stop iis de ghi de file 
+                    bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\Restaurant"'
+                }
+            }
+        stage('Deploy to IIS') {
+                    steps {
+                        powershell '''
+                    
+                        # Tạo website nếu chưa có
+                        Import-Module WebAdministration
+                        if (-not (Test-Path IIS:\\Sites\\MySite)) {
+                            New-Website -Name "MySite" -Port 82 -PhysicalPath "c:\\wwwroot\\Restaurant"
+                        }
+                        '''
+                    }
+                } // end deploy iis
+    }
 }//end pipeline
 
