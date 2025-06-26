@@ -101,6 +101,5 @@ pipeline {
                     }
                 } // end deploy iis
     }
-    // note demo hihi
 }//end pipeline
 
