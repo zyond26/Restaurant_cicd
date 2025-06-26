@@ -5,7 +5,7 @@ pipeline {
 	stage('clone'){
 		steps {
 			echo 'Cloning source code'
-			git branch:'main', url: 'https://github.com/zyond26/Restaurant_cicd.git'
+			git branch:'master', url: 'https://github.com/zyond26/Restaurant_cicd.git'
             	}
 	} // end clone
     stage('restore package') {
