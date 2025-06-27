@@ -96,7 +96,7 @@ pipeline {
                 bat 'iisreset /stop'
 
                 echo 'Cleaning existing deploy folder...'
-                bat 'if exist C:\\Web_Restaurant rd /s /q D:\\Web_Restaurant'
+                bat 'if exist C:\\Web_Restaurant rd /s /q C:\\Web_Restaurant'
 
                 echo 'Creating IIS folder...'
                 bat 'mkdir C:\\Web_Restaurant'
