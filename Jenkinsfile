@@ -96,13 +96,13 @@ pipeline {
                 bat 'iisreset /stop'
 
                 echo 'Cleaning existing deploy folder...'
-                bat 'if exist D:\\Web_Restaurant rd /s /q D:\\Web_Restaurant'
+                bat 'if exist C:\\Web_Restaurant rd /s /q D:\\Web_Restaurant'
 
                 echo 'Creating IIS folder...'
-                bat 'mkdir D:\\Web_Restaurant'
+                bat 'mkdir C:\\Web_Restaurant'
 
                 echo 'Copying to IIS folder...'
-                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\publish\\*" "D:\\Web_Restaurant\\"'
+                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\publish\\*" "C:\\Web_Restaurant\\"'
 
                 echo 'Starting IIS again...'
                 bat 'iisreset /start'
@@ -115,7 +115,7 @@ pipeline {
                     Import-Module WebAdministration
 
                     $siteName = "Web_Restaurant"
-                    $sitePath = "D:\\Web_Restaurant"
+                    $sitePath = "C:\\Web_Restaurant"
                     $sitePort = 8089
 
                     if (-not (Test-Path "IIS:\\Sites\\$siteName")) {
