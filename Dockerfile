@@ -11,6 +11,9 @@ COPY . .
 # Build the application
 RUN dotnet build "./Web_Restaurant.csproj" -c Release -o /app/build
 
+# Build a folder to save DataProtection keys
+RUN mkdir -p /app/DataProtectionKeys
+
 # Publish the app
 FROM build AS publish
 RUN dotnet publish "./Web_Restaurant.csproj" -c  Release -o /app/publish /p:UseAppHost=false
