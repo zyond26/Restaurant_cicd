@@ -58,7 +58,7 @@ pipeline {
         stage('Clone') {
             steps {
                 echo 'Cloning source code'
-                git branch: 'main', url: 'https://github.com/Trang1711/Web_Restaurant.git'
+                git branch: 'main', url: 'https://github.com/zyond26/Restaurant_cicd.git'
             }
         }
 
@@ -99,13 +99,13 @@ pipeline {
                 bat 'iisreset /stop'
 
                 echo 'Cleaning existing deploy folder...'
-                bat 'if exist C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd rd /s /q C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd'
+                bat 'if exist C:\Users\dieup\Desktop\Trien_khai_phan_mem\\WOR_cicd rd /s /q C:\Users\dieup\Desktop\Trien_khai_phan_mem\\WOR_cicd'
 
                 echo 'Creating IIS folder...'
-                bat 'mkdir C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd'
+                bat 'mkdir C:\Users\dieup\Desktop\Trien_khai_phan_mem\\WOR_cicd'
 
                 echo 'Copying to IIS folder...'
-                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\publish\\*" "C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd\\"'
+                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\publish\\*" "C:\Users\dieup\Desktop\Trien_khai_phan_mem\\WOR_cicd\\"'
 
                 echo 'Starting IIS again...'
                 bat 'iisreset /start'
@@ -118,7 +118,7 @@ pipeline {
                     Import-Module WebAdministration
 
                     $siteName = "Web_Restaurant_cicd"
-                    $sitePath = "C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd"
+                    $sitePath = "C:\Users\dieup\Desktop\Trien_khai_phan_mem\\Web_Restaurant_cicd"
                     $sitePort = 8089
 
                     if (-not (Test-Path "IIS:\\Sites\\$siteName")) {
