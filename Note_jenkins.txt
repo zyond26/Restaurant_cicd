@@ -35,4 +35,4 @@ Script Path: Jenkinsfile.
 
 +)sau đó ấn save rôi Build Now có tick xanh là được nha 
 
-
+- ngonnn
