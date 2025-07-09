@@ -58,7 +58,7 @@ pipeline {
         stage('Clone') {
             steps {
                 echo 'Cloning source code'
-                git branch: 'master', url: 'https://github.com/zyond26/Restaurant_cicd.git'
+                git branch: 'main', url: 'https://github.com/Trang1711/Web_Restaurant.git'
             }
         }
 
@@ -85,6 +85,9 @@ pipeline {
 
         stage('Publish to Folder') {
             steps {
+                echo 'Cleaning old publish folder...'
+                bat 'if exist "%WORKSPACE%\\publish" rd /s /q "%WORKSPACE%\\publish"'
+                
                 echo 'Publishing to temporary folder...'
                 bat 'dotnet publish -c Release -o "%WORKSPACE%\\publish"'
             }
@@ -96,13 +99,13 @@ pipeline {
                 bat 'iisreset /stop'
 
                 echo 'Cleaning existing deploy folder...'
-                bat 'if exist C:\\Web_Restaurant rd /s /q C:\\Web_Restaurant'
+                bat 'if exist C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd rd /s /q C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd'
 
                 echo 'Creating IIS folder...'
-                bat 'mkdir C:\\Web_Restaurant'
+                bat 'mkdir C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd'
 
                 echo 'Copying to IIS folder...'
-                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\publish\\*" "C:\\Web_Restaurant\\"'
+                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\publish\\*" "C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd\\"'
 
                 echo 'Starting IIS again...'
                 bat 'iisreset /start'
@@ -114,9 +117,9 @@ pipeline {
                 powershell '''
                     Import-Module WebAdministration
 
-                    $siteName = "Web_Restaurant"
-                    $sitePath = "C:\\Web_Restaurant"
-                    $sitePort = 26
+                    $siteName = "Web_Restaurant_cicd"
+                    $sitePath = "C:\Users\dieup\Desktop\Mon Trien Khai Ki 6 CMC\\Web_Restaurant_cicd"
+                    $sitePort = 8089
 
                     if (-not (Test-Path "IIS:\\Sites\\$siteName")) {
                         New-Website -Name $siteName -Port $sitePort -PhysicalPath $sitePath -Force
