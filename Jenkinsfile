@@ -97,7 +97,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    bat 'docker build -t zyond/WebRestaurant_cicd:latest .'
+                    bat 'docker build -t zyond/webrestaurant_cicd:latest .'
                 }
             }
         }
@@ -106,7 +106,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Docker container...'
-                    bat 'docker run -d -p 8090:80 zyond/WebRestaurant_cicd:latest'
+                    bat 'docker run -d -p 8090:80 zyond/webrestaurant_cicd:latest'
                 }
             }
         }
@@ -115,8 +115,8 @@ pipeline {
             steps {
                 script {
                     echo 'Pushing Docker image to Docker Hub...'
-                    bat 'docker login -u zyond -p your-dockerhub-password'
-                    bat 'docker push zyond/WebRestaurant_cicd:latest'
+                    bat 'docker login -u zyond -p Dieu342005!@#$%^'
+                    bat 'docker push zyond/webrestaurant_cicd:latest'
                 }
             }
         }
