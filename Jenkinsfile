@@ -93,6 +93,35 @@ pipeline {
             }
         }
 
+         stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    bat 'docker build -t zyond/WebRestaurant_cicd:latest .'
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    echo 'Running Docker container...'
+                    bat 'docker run -d -p 8090:80 zyond/WebRestaurant_cicd:latest'
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    echo 'Pushing Docker image to Docker Hub...'
+                    bat 'docker login -u zyond -p your-dockerhub-password'
+                    bat 'docker push zyond/WebRestaurant_cicd:latest'
+                }
+            }
+        }
+
+
         stage('Copy to IIS Folder') {
             steps {
                 echo 'Stopping IIS...'
