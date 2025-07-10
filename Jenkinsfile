@@ -56,7 +56,7 @@ pipeline {
       environment {
         LANG = 'en_US.UTF-8'
         LC_ALL = 'en_US.UTF-8'
-		DOCKERHUB_CREDENTIALS = 'dockerhub'  // ID credentials
+		DOCKERHUB_CREDENTIALS = 'a8043e21-320b-4f12-b72e-612d7a93c553'  // ID credentials
         IMAGE_NAME = 'zyond/cicd '  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'zyond/cicd'  //  Docker image name
         DOCKER_TAG = 'v1'  // Tag cho Docker image
