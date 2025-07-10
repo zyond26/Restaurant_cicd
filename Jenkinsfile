@@ -53,7 +53,14 @@
 
 pipeline {
     agent any
-
+      environment {
+        LANG = 'en_US.UTF-8'
+        LC_ALL = 'en_US.UTF-8'
+		DOCKERHUB_CREDENTIALS = 'dockerhub'  // ID credentials
+        IMAGE_NAME = 'zyond/cicd '  // name of image on Docker Hub -- create repo on hub.docker
+		DOCKER_IMAGE_NAME = 'zyond/cicd'  //  Docker image name
+        DOCKER_TAG = 'v1'  // Tag cho Docker image
+    }
     stages {
         stage('Clone') {
             steps {
@@ -94,34 +101,37 @@ pipeline {
         }
 
 // automated deployment to Docker Hub 
-         stage('Build Docker Image') {
+  stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Building Docker image...'
-                    bat 'docker build -t zyond/cicd:latest .'
+                    // Build Docker image from Dockerfile
+                    docker.build("${DOCKER_IMAGE_NAME}:latest")
                 }
             }
         }
+		
 
-        stage('Run Docker Container') {
+        stage('Login to Docker Hub') {
             steps {
                 script {
-                    echo 'Running Docker container...'
-                    bat 'docker run -d -p 8088:80 zyond/cicd:latest'
+                    // login Docker Hub to push image
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        // login Docker Hub credentials
+                    }
                 }
             }
         }
-
-        stage('Push Docker Image to Docker Hub') {
+		 
+        stage('Push Docker Image') {
             steps {
+				 
                 script {
-                    echo 'Pushing Docker image to Docker Hub...'
-                    bat 'docker login -u zyond -p Dieu342005!@#$%^'
-                    bat 'docker tag zyond/cicd:latest zyond/cicd:latest'
-                    bat 'docker push zyond/cicd:latest'
+                    // push Docker image to Docker Hub
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
+                    }
                 }
             }
-        }
 
 // automated deployment to IIS
         stage('Copy to IIS Folder') {
