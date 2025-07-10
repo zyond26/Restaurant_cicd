@@ -117,6 +117,7 @@ pipeline {
                 script {
                     echo 'Pushing Docker image to Docker Hub...'
                     bat 'docker login -u zyond -p Dieu342005!@#$%^'
+                    bat 'docker tag zyond/cicd:latest zyond/cicd:latest'
                     bat 'docker push zyond/cicd:latest'
                 }
             }
