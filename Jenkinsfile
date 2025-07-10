@@ -101,7 +101,7 @@ pipeline {
         }
 
 // automated deployment to Docker Hub 
-  stage('Build Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     // Build Docker image from Dockerfile
@@ -132,6 +132,7 @@ pipeline {
                     }
                 }
             }
+        }
 
 // automated deployment to IIS
         stage('Copy to IIS Folder') {
