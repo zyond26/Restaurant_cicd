@@ -93,6 +93,7 @@ pipeline {
             }
         }
 
+// automated deployment to Docker Hub 
          stage('Build Docker Image') {
             steps {
                 script {
@@ -121,7 +122,7 @@ pipeline {
             }
         }
 
-
+// automated deployment to IIS
         stage('Copy to IIS Folder') {
             steps {
                 echo 'Stopping IIS...'
