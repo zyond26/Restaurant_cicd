@@ -107,7 +107,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Docker container...'
-                    bat 'docker run -d -p 8090:80 zyond/webrestaurant_cicd:latest'
+                    bat 'docker run -d -p 8088:80 zyond/webrestaurant_cicd:latest'
                 }
             }
         }
