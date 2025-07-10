@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<WebRestaurant.Models.MenuItem>
 
 <div class="container">
-    <h2 class="text-center mb-4">Quản lý thực đơn</h2>
+    <h2 class="text-center mb-4" style="font-weight: bold;color:white" ;>Quản lý thực đơn</h2>
 
     <!-- Card hiển thị thông tin thực đơn -->
     <div class="card">
@@ -30,8 +30,10 @@
                             <td>
                                 @{
                                     // Kiểm tra nếu ImageUrl là đường dẫn internet hay ảnh đã tải về
-                                    bool isExternalImage = item.ImageUrl.StartsWith("http://") || item.ImageUrl.StartsWith("https://");
-                                    string imageUrl = isExternalImage ? item.ImageUrl : Url.Content("~/images/" + item.ImageUrl);
+                                    bool isExternalImage = item.ImageUrl.StartsWith("http://") ||
+                                    item.ImageUrl.StartsWith("https://");
+                                    string imageUrl = isExternalImage ? item.ImageUrl : Url.Content("~/images/" +
+                                    item.ImageUrl);
                                 }
 
                                 @if (!string.IsNullOrEmpty(item.ImageUrl))
@@ -44,8 +46,10 @@
                                 }
                             </td>
                             <td>
-                                <a href="@Url.Action("EditMenuItem", "Admin", new { id = item.Id })" class="btn btn-warning btn-sm">Sửa</a>
-                                <form action="@Url.Action("DeleteMenuItem", "Admin", new { id = item.Id })" method="post" style="display:inline;">
+                                <a href="@Url.Action("EditMenuItem", "Admin", new { id = item.Id })"
+                                    class="btn btn-warning btn-sm">Sửa</a>
+                                <form action="@Url.Action("DeleteMenuItem", "Admin", new { id = item.Id })" method="post"
+                                    style="display:inline;">
                                     <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                                 </form>
                             </td>
