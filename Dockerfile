@@ -26,7 +26,7 @@ VOLUME /app/keys
 COPY --from=publish /app/publish .
 
 # Expose ports (adjust to match your app configuration)
-EXPOSE 5000 8090
+EXPOSE 5000 
 
 # Set environment variables for ASP.NET Core
 ENV ASPNETCORE_URLS=http://+:5000
