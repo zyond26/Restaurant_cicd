@@ -1,95 +1,51 @@
-// pipeline {
-//     agent any
-//     environment {
-//         RENDER_API_KEY = credentials('render-api-key') // ID của Render API Key
-//         SERVICE_ID = 'srv-d1bd0hqdbo4c73cdeif0' // Service ID của bạn
-//     }
-//     stages {
-//         stage('Restore') {
-//             steps {
-//                 bat 'dotnet restore Web_Restaurant.csproj'
-//             }
-//         }
-//         stage('Build') {
-//             steps {
-//                 bat 'dotnet build Web_Restaurant.csproj -c Release --no-restore'
-//             }
-//         }
-//         stage('Test') {
-//             steps {
-//                 echo 'Chạy unit tests (thêm lệnh test nếu có)'
-//                 // Nếu có project test: bat 'dotnet test tests\\YourTestProject.csproj'
-//             }
-//         }
-//         stage('Deploy to Render') {
-//             steps {
-//                 script {
-//                     def payload = '''{
-//                         "clearCache": true
-//                     }'''
-//                     bat """
-//                         curl -X POST ^
-//                         -H "Authorization: Bearer %RENDER_API_KEY%" ^
-//                         -H "Content-Type: application/json" ^
-//                         -d "%payload%" ^
-//                         https://api.render.com/v1/services/%SERVICE_ID%/deploys
-//                     """
-//                 }
-//             }
-//         }
-//     }
-//     post {
-//         always {
-//             echo 'Pipeline hoàn thành!'
-//         }
-//         success {
-//             echo 'Triển khai thành công lên Render!'
-//         }
-//         failure {
-//             echo 'Pipeline thất bại. Kiểm tra log để biết chi tiết.'
-//         }
-//     }
-// }
+// Jenkinsfile for CI/CD Pipeline
+// This Jenkinsfile defines a CI/CD pipeline for a .NET application that builds, tests, and deploys the application to Docker Hub and IIS.
 
 pipeline {
     agent any
       environment {
+        // docker environment variables
         LANG = 'en_US.UTF-8'
         LC_ALL = 'en_US.UTF-8'
 		DOCKERHUB_CREDENTIALS = 'a8043e21-320b-4f12-b72e-612d7a93c553'  // ID credentials
         IMAGE_NAME = 'zyond/cicd'  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'zyond/cicd'  //  Docker image name
         DOCKER_TAG = 'latest'  // Tag cho Docker image
-    }
+
+        // MinIO environment variables
+        // MINIO_ENDPOINT = 'http://minio-server:9000'
+        // MINIO_BUCKET = 'jenkins-artifacts'
+}
     stages {
+        // Clone the source code from GitHub
         stage('Clone') {
             steps {
                 echo 'Cloning source code'
                 git branch: 'master', url: 'https://github.com/zyond26/Restaurant_cicd.git'
             }
         }
-
+        // Restore NuGet packages 
         stage('Restore Packages') {
             steps {
                 echo 'Restoring NuGet packages...'
                 bat 'dotnet restore'
             }
         }
-
+        // Build the project
         stage('Build') {
             steps {
                 echo 'Building the project...'
                 bat 'dotnet build --configuration Release'
             }
         }
-
+        // run tests
         stage('Run Tests') {
             steps {
                 echo 'Running unit tests...'
                 bat 'dotnet test --no-build --verbosity normal'
             }
         }
-
+        // Publish   to a folder
         stage('Publish to Folder') {
             steps {
                 echo 'Cleaning old publish folder...'
@@ -100,33 +56,32 @@ pipeline {
             }
         }
 
-// automated deployment to Docker Hub 
+        //--------------------   automated deployment to Docker Hub  -------------------------
+
+        // Build Docker Image
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image from Dockerfile
                     docker.build("${DOCKER_IMAGE_NAME}:latest")
                 }
             }
         }
 		
-
+        // Login to Docker Hub
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    // login Docker Hub to push image
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         // login Docker Hub credentials
                     }
                 }
             }
         }
-		 
+        // Push Docker Image to Docker Hub
         stage('Push Docker Image') {
             steps {
 				 
                 script {
-                    // push Docker image to Docker Hub
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
                     }
@@ -134,7 +89,39 @@ pipeline {
             }
         }
 
-// automated deployment to IIS
+ // ---------------------  automated deployment to MinIO -------------------------
+
+        // stage('Upload to MinIO') {
+        //     steps {
+        //         withCredentials([
+        //             string(credentialsId: 'minio-access-key', variable: 'MINIO_ACCESS_KEY'),
+        //             string(credentialsId: 'minio-secret-key', variable: 'MINIO_SECRET_KEY')
+        //         ]) {
+        //             script {
+        //                 bat 'curl https://dl.min.io/client/mc/release/linux-amd64/mc -o mc && chmod +x mc'
+        //                 bat """./mc alias set minio ${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}"""
+        //                 bat """./mc mb minio/${MINIO_BUCKET} || true"""
+        //                 bat """./mc cp --recursive "${WORKSPACE}/publish/" minio/${MINIO_BUCKET}/${JOB_NAME}/${BUILD_NUMBER}/"""
+        //             }
+        //         }
+        //     }
+        // }
+ // ---------------------  automated deployment to Kubernetes -------------------------
+        // stage('Deploy to Kubernetes') {
+        //     steps {
+        //         withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+        //             script {
+        //                 bat "sed -i 's|zyond/cicd:latest|zyond/cicd:${BUILD_NUMBER}|g' k8s/deployment.yaml"
+        //                 bat "kubectl apply -f k8s/"
+        //                 bat "kubectl rollout status deployment/restaurant-app --timeout=300s"
+        //             }
+        //         }
+        //     }
+        // }
+
+     //---------------------  automated deployment to IIS -------------------------
+
+        // Copy to IIS Folder
         stage('Copy to IIS Folder') {
             steps {
                 echo 'Stopping IIS...'
@@ -153,7 +140,7 @@ pipeline {
                 bat 'iisreset /start'
             }
         }
-
+        // Ensure IIS Site Exists
         stage('Ensure IIS Site Exists') {
             steps {
                 powershell '''
@@ -171,5 +158,6 @@ pipeline {
                 '''
             }
         }
+
     }
 }

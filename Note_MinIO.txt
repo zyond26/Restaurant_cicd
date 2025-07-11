@@ -1,0 +1,72 @@
+------  MinIO - Object Storage riêng tư ------------
+
+🔍 Mục đích chính:
+Thay thế Amazon S3 khi cần lưu trữ file (ảnh, video, backup) trên server riêng
+
+Dùng trong môi trường dev/test không muốn phụ thuộc vào cloud
+
+Lưu trữ dữ liệu cho AI/ML, log hệ thống, file tạm
+
+** cài đặt MinIO
+
+# Tải MinIO (PowerShell)
+Invoke-WebRequest -Uri "https://dl.min.io/server/minio/release/windows-amd64/minio.exe" -OutFile "C:\minio\minio.exe"
+
+# Chạy MinIO với cổng tùy chỉnh (CMD/PowerShell)
+set MINIO_ROOT_USER=myadmin              # Đổi username
+set MINIO_ROOT_PASSWORD=Your@StrongPass  # Đổi password
+.\minio.exe server C:\minio-data --console-address ":9001" --address ":9000"
+
+2. Truy cập Web Console
+URL: http://localhost:9001
+
+Đăng nhập bằng MINIO_ROOT_USER và MINIO_ROOT_PASSWORD đã đặt.
+
+3. Quản lý qua CLI (mc.exe)
+Cài đặt MinIO Client
+powershell
+# Tải mc.exe
+Invoke-WebRequest -Uri "https://dl.min.io/client/mc/release/windows-amd64/mc.exe" -OutFile "C:\minio\mc.exe"
+
+# Cấu hình alias
+.\mc.exe alias set myminio http://127.0.0.1:9000 myadmin Your@StrongPass
+Các lệnh thường dùng
+Lệnh	                                         Mục đích
+mc ls myminio	                            Liệt kê bucket
+mc mb myminio/mybucket	                  Tạo bucket mới
+mc cp file.txt myminio/mybucket	          Upload file
+mc policy set public myminio/mybucket	    Set public access
+
+
+
+
+6.2.	⚙️ Cách chạy MinIO với Docker
+Dữ liệu up vòa MinIO thông qua các backet => lưu trong Volume
+✅ 1. Chạy container MinIO đơn giản:
+
+- Mở bash gõ lệnh : 
+
+docker run -p 9000:9000 -p 9001:9001 \
+  -e "MINIO_ROOT_USER=admin" \
+  -e "MINIO_ROOT_PASSWORD=12345678" \
+  --name minio \
+  -v minio-data:/data \
+  quay.io/minio/minio server /data --console-address ":9001"
+
+
+--------------------------------------------------------------------------
+
+docker run -d   -p 9000:9000 -p 9001:9001   --name minio-server   -v /c/minio-data:/data   -e "MINIO_ROOT_USER=admin"   -e "MINIO_ROOT_PASSWORD=12345678"   minio/minio server /data --console-address ":9001"
+
+
+==> 	Sau đó có thể truy cập http://localhost:9001
+
+
+
+** Cách gỡ cài đặt
+Dừng MinIO:
+
+powershell
+Stop-Process -Name minio -Force
+Xóa thư mục C:\minio và C:\minio-data (nếu không cần dữ liệu).
+

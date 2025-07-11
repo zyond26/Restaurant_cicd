@@ -1,0 +1,30 @@
+2. Grafana - Giám sát hệ thống
+🔍 Mục đích chính:
+Hiển thị metrics server (CPU, RAM, Disk) dạng biểu đồ
+
+Giám sát hiệu năng ứng dụng .NET qua Prometheus
+
+Tạo dashboard cảnh báo khi hệ thống quá tải
+
+- 🛠 Cài đặt với Docker Compose:
+
++) Tạo file docker-compose.yml
+
+                version: '3'
+                services:
+                grafana:
+                    image: grafana/grafana
+                    ports:
+                    - "3000:3000"
+                    volumes:
+                    - grafana-storage:/var/lib/grafana
+
+                prometheus:
+                    image: prom/prometheus
+                    ports:
+                    - "9090:9090"
+                    volumes:
+                    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+                volumes:
+                grafana-storage:

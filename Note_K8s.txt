@@ -1,0 +1,9 @@
+Kubernetes - Triển khai ứng dụng
+
+🔍 Mục đích chính:
+Tự động scale ứng dụng khi traffic tăng
+
+Quản lý nhiều môi trường (dev/test/staging) trên cùng cluster
+
+Triển khai ứng dụng không downtime (rolling update)
+

@@ -33,3 +33,5 @@ ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENTRYPOINT ["dotnet", "Web_Restaurant.dll"]
+
+RUN curl -sSL https://github.com/prometheus-net/prometheus-net/raw/main/get-core.sh | bash

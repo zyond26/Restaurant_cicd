@@ -1,3 +1,1 @@
-hi check test hihi
-test Jenkins
-heloo, world
+This repo is about CI/CD progress for my project WebOrderingRestaurant
