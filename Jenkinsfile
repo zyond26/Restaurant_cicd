@@ -11,11 +11,7 @@ pipeline {
         IMAGE_NAME = 'zyond/cicd'  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'zyond/cicd'  //  Docker image name
         DOCKER_TAG = 'latest'  // Tag cho Docker image
-
-
-        // MinIO environment variables
-        MINIO_ENDPOINT = 'http://minio-server:9000'
-        MINIO_BUCKET = 'jenkins-artifacts'
+        
 }
     stages {
 
@@ -91,36 +87,7 @@ pipeline {
             }
         }
 
- // ---------------------  automated deployment to MinIO -------------------------
-
-        stage('Upload to MinIO') {
-            steps {
-                withCredentials([
-                    string(credentialsId: 'minio-access-key', variable: 'MINIO_ACCESS_KEY'),
-                    string(credentialsId: 'minio-secret-key', variable: 'MINIO_SECRET_KEY')
-                ]) {
-                    script {
-                        bat 'curl https://dl.min.io/client/mc/release/linux-amd64/mc -o mc && chmod +x mc'
-                        bat """./mc alias set minio ${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}"""
-                        bat """./mc mb minio/${MINIO_BUCKET} || true"""
-                        bat """./mc cp --recursive "${WORKSPACE}/publish/" minio/${MINIO_BUCKET}/${JOB_NAME}/${BUILD_NUMBER}/"""
-                    }
-                }
-            }
-        }
- // ---------------------  automated deployment to Kubernetes -------------------------
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-        //             script {
-        //                 bat "sed -i 's|zyond/cicd:latest|zyond/cicd:${BUILD_NUMBER}|g' k8s/deployment.yaml"
-        //                 bat "kubectl apply -f k8s/"
-        //                 bat "kubectl rollout status deployment/restaurant-app --timeout=300s"
-        //             }
-        //         }
-        //     }
-        // }
-
+ 
      //---------------------  automated deployment to IIS -------------------------
 
         // Copy to IIS Folder
