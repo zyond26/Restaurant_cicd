@@ -13,7 +13,7 @@ pipeline {
         DOCKER_TAG = 'latest'  // Tag cho Docker image
 
 
-        MinIO environment variables
+        // MinIO environment variables
         MINIO_ENDPOINT = 'http://minio-server:9000'
         MINIO_BUCKET = 'jenkins-artifacts'
 }
