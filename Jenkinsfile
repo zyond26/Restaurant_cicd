@@ -11,13 +11,14 @@ pipeline {
         IMAGE_NAME = 'zyond/cicd'  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'zyond/cicd'  //  Docker image name
         DOCKER_TAG = 'latest'  // Tag cho Docker image
-        
+
 
         // MinIO environment variables
         // MINIO_ENDPOINT = 'http://minio-server:9000'
         // MINIO_BUCKET = 'jenkins-artifacts'
 }
     stages {
+        
         // Clone the source code from GitHub
         stage('Clone') {
             steps {
