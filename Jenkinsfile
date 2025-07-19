@@ -87,6 +87,32 @@ pipeline {
             }
         }
 
+        //---------------------  upload to minio  ------------------------
+        stage('Tạo file test') {
+            steps {
+                bat 'echo Build thành công > build-log.txt'
+            }
+        }
+
+        stage('Cấu hình AWS CLI cho MinIO') {
+            steps {
+                bat '''
+                aws configure set aws_access_key_id admin
+                aws configure set aws_secret_access_key password123
+                aws configure set default.region us-east-1
+                aws configure set default.output json
+                '''
+            }
+        }
+
+        stage('Upload file lên MinIO') {
+            steps {
+                bat '''
+                aws --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt
+                '''
+            }
+        }
+
  
      //---------------------  automated deployment to IIS -------------------------
 
