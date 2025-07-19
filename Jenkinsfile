@@ -88,7 +88,7 @@ pipeline {
         }
 
         //---------------------  upload to minio  ------------------------
-        
+
         stage('Tạo file test') {
             steps {
                 bat 'echo Build thành công > build-log.txt'
@@ -97,12 +97,10 @@ pipeline {
 
         stage('Cấu hình AWS CLI cho MinIO') {
             steps {
-                bat '''
-                aws configure set aws_access_key_id admin
-                aws configure set aws_secret_access_key password123
-                aws configure set default.region us-east-1
-                aws configure set default.output json
-                '''
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_access_key_id admin'
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_secret_access_key 12345678'
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt'
+
             }
         }
 
