@@ -8,23 +8,8 @@ Tạo dashboard cảnh báo khi hệ thống quá tải
 
 - 🛠 Cài đặt với Docker Compose:
 
-+) Tạo file docker-compose.yml
++) Tạo file docker-compose.yml roi chayj leenhj 
 
-                version: '3'
-                services:
-                grafana:
-                    image: grafana/grafana
-                    ports:
-                    - "3000:3000"
-                    volumes:
-                    - grafana-storage:/var/lib/grafana
+docker compose up -d
 
-                prometheus:
-                    image: prom/prometheus
-                    ports:
-                    - "9090:9090"
-                    volumes:
-                    - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-                volumes:
-                grafana-storage:
+                
