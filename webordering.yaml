@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webordering-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webordering
+  template:
+    metadata:
+      labels:
+        app: webordering
+    spec:
+      containers:
+        - name: webordering
+          image: wor_container/weborderingrestaurant:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webordering-service
+spec:
+  selector:
+    app: webordering
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP

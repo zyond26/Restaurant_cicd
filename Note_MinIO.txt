@@ -10,6 +10,7 @@ Lưu trữ dữ liệu cho AI/ML, log hệ thống, file tạm
 ** cài đặt MinIO
 
 # Tải MinIO (PowerShell)
+
 Invoke-WebRequest -Uri "https://dl.min.io/server/minio/release/windows-amd64/minio.exe" -OutFile "C:\minio\minio.exe"
 
 # Chạy MinIO với cổng tùy chỉnh (CMD/PowerShell)

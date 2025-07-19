@@ -86,6 +86,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// minio upload 
+
+builder.Services.AddSingleton<MinioService>();
+
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -102,6 +107,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebRestaurant API V1");
     });
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -121,7 +127,8 @@ using (var scope = app.Services.CreateScope())
     DataSeeder.SeedData(dbContext);
 }
 // // Cấu hình Prometheus
-// app.UseMetricServer(url: "/metrics");
+// app.UseMetricServer();
 // app.UseHttpMetrics();
+
 
 app.Run();

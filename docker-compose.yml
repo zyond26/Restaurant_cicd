@@ -1,23 +1,18 @@
-version: '3.7'
+version: '3.8'
 
 services:
   minio:
-    image: quay.io/minio/minio
-    hostname: minio
+    image: minio/minio:latest
+    container_name: minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9000:9000" # API
+      - "9001:9001" # Web UI
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: 12345678
+    command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
-    command: server /data --console-address ":9001"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
 
 volumes:
   minio_data:
