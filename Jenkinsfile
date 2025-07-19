@@ -88,6 +88,7 @@ pipeline {
         }
 
         //---------------------  upload to minio  ------------------------
+
         stage('Tạo file test') {
             steps {
                 bat 'echo Build thành công > build-log.txt'
@@ -98,15 +99,18 @@ pipeline {
             steps {
                 bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_access_key_id admin'
                 bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_secret_access_key 12345678'
+                // bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt'
+
             }
         }
 
         stage('Upload file lên MinIO') {
             steps {
-                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt --region us-east-1"'
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt'
             }
         }
 
+ 
      //---------------------  automated deployment to IIS -------------------------
 
         // Copy to IIS Folder
