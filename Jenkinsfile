@@ -106,9 +106,7 @@ pipeline {
 
         stage('Upload file lên MinIO') {
             steps {
-                bat '''
-                aws --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt
-                '''
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt'
             }
         }
 
