@@ -88,6 +88,7 @@ pipeline {
         }
 
         //---------------------  upload to minio  ------------------------
+        
         stage('Tạo file test') {
             steps {
                 bat 'echo Build thành công > build-log.txt'
