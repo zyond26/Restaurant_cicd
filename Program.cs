@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus; // Thêm dòng này
 using System.Text;
 using WebRestaurant.Data;
 using WebRestaurant.Services;
@@ -12,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 // Cấu hình Kestrel để bind tới 0.0.0.0 và PORT
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8090"; // Mặc định 8080 nếu không có PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8090"; // Mặc định 8090 nếu không có PORT
 builder.WebHost.UseKestrel(options =>
 {
     options.ListenAnyIP(int.Parse(port)); // Bind tới 0.0.0.0
@@ -86,10 +87,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// minio upload 
-
+// Minio upload 
 builder.Services.AddSingleton<MinioService>();
-
 
 var app = builder.Build();
 
@@ -108,13 +107,16 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Cấu hình Prometheus
+app.UseMetricServer(); // Thêm dòng này để sử dụng Metric Server
+app.UseHttpMetrics(); // Thêm dòng này để thu thập metrics HTTP
 
 app.MapControllerRoute(
     name: "default",
@@ -126,9 +128,5 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     DataSeeder.SeedData(dbContext);
 }
-// // Cấu hình Prometheus
-// app.UseMetricServer();
-// app.UseHttpMetrics();
-
 
 app.Run();

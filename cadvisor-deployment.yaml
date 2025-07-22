@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cadvisor
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cadvisor
+  template:
+    metadata:
+      labels:
+        app: cadvisor
+    spec:
+      hostNetwork: true  # Cho phép cAdvisor truy cập trực tiếp vào host
+      automountServiceAccountToken: false  # Tắt mount service account
+      containers:
+      - name: cadvisor
+        image: gcr.io/cadvisor/cadvisor:v0.47.0  # Sử dụng phiên bản ổn định
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: rootfs
+          mountPath: /rootfs
+          readOnly: true
+        - name: var-run
+          mountPath: /var/run
+          readOnly: true
+        - name: sys
+          mountPath: /sys
+          readOnly: true
+        - name: docker
+          mountPath: /var/lib/docker
+          readOnly: true
+        securityContext:
+          privileged: true
+      volumes:
+      - name: rootfs
+        hostPath:
+          path: /
+          type: Directory
+      - name: var-run
+        hostPath:
+          path: /var/run
+          type: DirectoryOrCreate
+      - name: sys
+        hostPath:
+          path: /sys
+          type: Directory
+      - name: docker
+        hostPath:
+          path: /var/lib/docker
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cadvisor-service
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: cadvisor
+  type: ClusterIP

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-restaurant
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-restaurant
+  template:
+    metadata:
+      labels:
+        app: web-restaurant
+    spec:
+      containers:
+      - name: web-restaurant
+        image: zyond/cicd:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: MinIO__Endpoint
+          value: "minio-service:9000"
+        - name: MinIO__AccessKey
+          value: "admin"
+        - name: MinIO__SecretKey
+          value: "12345678"
+        - name: MinIO__BucketName
+          value: "restaurant-assets"
+        - name: MinIO__Secure
+          value: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-restaurant-service
+  namespace: default
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: web-restaurant
+  type: ClusterIP
