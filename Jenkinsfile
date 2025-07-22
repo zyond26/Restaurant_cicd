@@ -226,20 +226,29 @@ pipeline {
                 }
             }
         }
+        
+        // -      mino -----------------------
         stage('Tạo file test') {
             steps {
                 bat 'echo Build thành công > build-log.txt'
             }
         }
-        stage('Upload file lên MinIO') {
+
+        stage('Cấu hình AWS CLI cho MinIO') {
             steps {
-                script {
-                    withAWS(credentials: 'minio-credentials', endpointUrl: 'http://minio-service:9000') {  // Sử dụng service MinIO trong Kubernetes
-                        s3Upload(file: 'build-log.txt', bucket: 'order-files', path: 'build-log.txt')
-                    }
-                }
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_access_key_id admin'
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_secret_access_key 12345678'
+
             }
         }
+
+        stage('Upload file lên MinIO') {
+            steps {
+                bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://localhost:9000 s3 cp build-log.txt s3://order-files/build-log.txt'
+            }
+        }
+
+// ------------------------------------------  k8s -----------------------------------
         stage('Deploy to Kubernetes') {
             steps {
                 script {
