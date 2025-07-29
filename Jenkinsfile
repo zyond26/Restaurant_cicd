@@ -165,7 +165,6 @@ pipeline {
         IMAGE_NAME = 'zyond/cicd'
         DOCKER_IMAGE_NAME = 'zyond/cicd'
         DOCKER_TAG = 'latest'
-        // KUBECONFIG_CREDENTIALS = 'kubeconfig'  // ID của kubeconfig trong Jenkins
         MINIO_CREDENTIALS = 'ec062030-09a1-4183-8f4f-81e593dacae3'  // ID của credentials MinIO trong Jenkins
     }
     stages {
@@ -248,21 +247,6 @@ pipeline {
             }
         }
 
-// ------------------------------------------  k8s -----------------------------------
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         script {
-        //             withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
-        //                 writeFile file: 'kubeconfig.yaml', text: "${KUBECONFIG_CONTENT}"
-        //                 bat 'set KUBECONFIG=%WORKSPACE%\\kubeconfig.yaml && kubectl apply -f restaurant-deployment.yaml'
-        //                 bat 'set KUBECONFIG=%WORKSPACE%\\kubeconfig.yaml && kubectl apply -f minio-deployment.yaml'
-        //                 bat 'set KUBECONFIG=%WORKSPACE%\\kubeconfig.yaml && kubectl apply -f prometheus-deployment.yaml'
-        //                 bat 'set KUBECONFIG=%WORKSPACE%\\kubeconfig.yaml && kubectl apply -f cadvisor-deployment.yaml'
-        //                 bat 'set KUBECONFIG=%WORKSPACE%\\kubeconfig.yaml && kubectl apply -f grafana-deployment.yaml'
-        //             }
-        //         }
-        //     }
-        // }
         stage('Copy to IIS Folder') {
             steps {
                 echo 'Stopping IIS...'
