@@ -154,8 +154,7 @@
 //     }
 // }okee
 
-
-
+//  ------------------ tich hop traefik ----------------------
 pipeline {
     agent any
     environment {
