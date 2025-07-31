@@ -7,14 +7,22 @@ scrape_configs:
       - targets: ['prometheus:9090']
 
   - job_name: 'web-restaurant'
+    metrics_path: '/metrics'  # Đặt ở đây
     static_configs:
       - targets: ['web-restaurant:5000']
-        metrics_path: '/metrics'
 
   - job_name: 'minio'
+    metrics_path: '/minio/v2/metrics/cluster'  # Đặt ở đây
+    basic_auth:
+      username: admin
+      password: 12345678
     static_configs:
       - targets: ['minio:9000']
-        metrics_path: '/minio/v2/metrics/cluster'
-        basic_auth:
-          username: admin
-          password: 12345678
+
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9090']  # Có thể xóa nếu không dùng
+
+  - job_name: 'jenkins'
+    static_configs:
+      - targets: ['host.docker.internal:8099']  # Có thể xóa nếu không dùng
