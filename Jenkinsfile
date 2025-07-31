@@ -202,7 +202,7 @@ pipeline {
         }
 
         //  ------------------------- docker image and push to dockerhub -----------------
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -248,6 +248,8 @@ pipeline {
                 bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" --endpoint-url http://minio.localhost s3 cp WebRestaurant12_autobackup_629062_2025-07-28T10-16-35.BAK s3://order-files/WebRestaurant12_autobackup_629062_2025-07-28T10-16-35.BAK'
             }
         }
+
+//  cd ---------------------> up to IIS -----------------------------
 
         stage('Copy to IIS Folder') {
             steps {
