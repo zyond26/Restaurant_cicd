@@ -232,7 +232,6 @@ pipeline {
                 bat 'echo Build thành công > build-log.txt'
             }
         }
-
         stage('Cấu hình AWS CLI cho MinIO') {
             steps {
                 bat '"C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" configure set aws_access_key_id admin'
