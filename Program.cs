@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Prometheus; // Thêm dòng này
+using Prometheus;
 using System.Text;
 using WebRestaurant.Data;
 using WebRestaurant.Services;
@@ -86,6 +86,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.WebHost.UseUrls("http://0.0.0.0:5000");
+
 
 // Minio upload 
 builder.Services.AddSingleton<MinioService>();
