@@ -34,3 +34,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENTRYPOINT ["dotnet", "Web_Restaurant.dll"]
 
+EXPOSE 5000

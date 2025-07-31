@@ -200,6 +200,9 @@ pipeline {
                 bat 'dotnet publish -c Release -o "%WORKSPACE%\\publish"'
             }
         }
+
+        //  ------------------------- docker image and push to dockerhub -----------------
+        
         stage('Build Docker Image') {
             steps {
                 script {
@@ -226,7 +229,8 @@ pipeline {
             }
         }
         
-        // -      mino -----------------------
+        // ---------------------------------------------    mino -----------------------
+
         stage('Tạo file test') {
             steps {
                 bat 'echo Build thành công > build-log.txt'

@@ -96,16 +96,16 @@ services:
       - traefik-net
 
   web-restaurant:
-    image: zyond/cicd:latest
     container_name: web-restaurant
+    image: zyond/cicd:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=WebRestaurant12;User Id=sa;Password=12345678;
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.webapp.rule=Host(`web.localhost`)"
-      - "traefik.http.services.webapp.loadbalancer.server.port=5000"
-    networks:
-      - traefik-net
+      - ASPNETCORE_URLS=http://+:5000
+    restart: always
 
   grafana:
     image: grafana/grafana:latest
