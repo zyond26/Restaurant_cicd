@@ -2,17 +2,19 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: 'docker'
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ['host.docker.internal:9090']
+      - targets: ['prometheus:9090']
 
- 
-  - job_name: 'web_restaurant'
+  - job_name: 'web-restaurant'
     static_configs:
-      - targets: ['web_restaurant:5000'] # Đảm bảo tên dịch vụ khớp với tên trong docker-compose.yml
+      - targets: ['web-restaurant:5000']
+        metrics_path: '/metrics'
 
-      
-  - job_name: 'jenkins'
+  - job_name: 'minio'
     static_configs:
-      - targets: ['host.docker.internal:8099']
-
+      - targets: ['minio:9000']
+        metrics_path: '/minio/v2/metrics/cluster'
+        basic_auth:
+          username: admin
+          password: 12345678

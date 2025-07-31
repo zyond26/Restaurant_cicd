@@ -118,8 +118,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Cấu hình Prometheus
-app.UseMetricServer(); // Thêm dòng này để sử dụng Metric Server
 app.UseHttpMetrics(); // Thêm dòng này để thu thập metrics HTTP
+app.UseRouting();
+
+app.UseHttpMetrics();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapMetrics(); // expose endpoint /metrics
+});
+
+
 
 app.MapControllerRoute(
     name: "default",
