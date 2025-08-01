@@ -281,5 +281,16 @@ pipeline {
                 '''
             }
         }
+        
+// --------------- update with docker compose -------------
+ 
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    bat 'docker-compose -f docker-compose.yml down'
+                    bat 'docker-compose -f docker-compose.yml up -d --build'
+                }
+            }
+        }
     }
 }
