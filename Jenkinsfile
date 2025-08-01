@@ -202,7 +202,7 @@ pipeline {
             }
         }
 
-        //  ------------------------- docker image and push to dockerhub -----------------
+        //  ------------------------- docker image and push to dockerhub ngonn -----------------
 
         stage('Build Docker Image') {
             steps {
